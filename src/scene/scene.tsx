@@ -1,32 +1,36 @@
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React, { Suspense, useState } from "react";
+import Model from "./model"; // Ensure this path is correct
 
-// Load and render the 3D model
-const Model: React.FC<{ scale: number; widthScale: number }> = ({
-  scale,
-  widthScale,
-}) => {
-  const { scene } = useGLTF("./lowpoly-human-reff.glb");
-  // Adjust the scale of the model to affect its width
-  scene.scale.set(scale * widthScale, scale, scale);
-  return <primitive object={scene} />;
-};
-
-// Main Scene component
 const Scene: React.FC = () => {
   const [height, setHeight] = useState<number>(180); // Default height in cm
   const [chestWidth, setChestWidth] = useState<number>(96.52); // Default chest width in cm
+  const [waistWidth, setWaistWidth] = useState<number>(80); // Default waist width in cm
+  const [hipWidth, setHipWidth] = useState<number>(96.52); // Default hip width in cm
 
-  const modelOriginalHeight = 180; // Replace this with your model's original height in cm
-  const modelOriginalChestWidth = 96.52; // Replace this with your model's original chest width in cm
+  const modelOriginalHeight = 220; // The height of the model when the positions are defined
 
   // Convert height in cm to scale factor
   const heightScaleFactor = height / modelOriginalHeight;
-  // Convert chest width in cm to width scale factor
-  const widthScaleFactor = chestWidth / modelOriginalChestWidth;
 
-  // Handle height change with constraints
+  // Proportions for chest, waist, and hip positions based on 220 cm model height
+  const chestHeightPercentage = 0.55; // Percentage of height where chest is located
+  const waistHeightPercentage = 0.45; // Percentage of height where waist is located
+  const hipHeightPercentage = 0.37; // Percentage of height where hips are located
+
+  // Calculate positions and sizes of the boxes based on the current height
+  const chestPosition = (height * chestHeightPercentage) / 100;
+  const waistPosition = (height * waistHeightPercentage) / 100;
+  const hipPosition = (height * hipHeightPercentage) / 100;
+
+  const boxHeight = 0.2 * heightScaleFactor; // Adjust box height proportionally
+
+  // Adjust the box width to match the proportion of the model's height
+  const chestBoxWidth = (chestWidth / 300) * heightScaleFactor;
+  const waistBoxWidth = (waistWidth / 340) * heightScaleFactor;
+  const hipBoxWidth = (hipWidth / 340) * heightScaleFactor;
+
   const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHeight = Number(e.target.value);
     if (newHeight >= 150 && newHeight <= 220) {
@@ -34,11 +38,24 @@ const Scene: React.FC = () => {
     }
   };
 
-  // Handle chest width change with constraints
   const handleChestWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newChestWidth = Number(e.target.value);
     if (newChestWidth >= 70 && newChestWidth <= 120) {
       setChestWidth(newChestWidth);
+    }
+  };
+
+  const handleWaistWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newWaistWidth = Number(e.target.value);
+    if (newWaistWidth >= 60 && newWaistWidth <= 100) {
+      setWaistWidth(newWaistWidth);
+    }
+  };
+
+  const handleHipWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newHipWidth = Number(e.target.value);
+    if (newHipWidth >= 70 && newHipWidth <= 120) {
+      setHipWidth(newHipWidth);
     }
   };
 
@@ -51,7 +68,12 @@ const Scene: React.FC = () => {
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
         <Suspense fallback={<span>Loading...</span>}>
-          <Model scale={heightScaleFactor} widthScale={widthScaleFactor} />
+          <Model
+            scale={heightScaleFactor}
+            chestWidth={chestWidth}
+            waistWidth={waistWidth}
+            hipWidth={hipWidth}
+          />
         </Suspense>
         <OrbitControls
           enableZoom={true}
@@ -66,6 +88,29 @@ const Scene: React.FC = () => {
         <mesh rotation-x={-Math.PI / 2}>
           <circleGeometry args={[5, 32]} />
           <meshStandardMaterial color="#343434" />
+        </mesh>
+
+        {/* Debug boxes */}
+        <mesh
+          position={[0, chestPosition, 0]}
+          scale={[chestBoxWidth, boxHeight, 0.2]}
+        >
+          <boxGeometry />
+          <meshStandardMaterial color="red" transparent opacity={0.5} />
+        </mesh>
+        <mesh
+          position={[0, waistPosition, 0]}
+          scale={[waistBoxWidth, boxHeight, 0.2]}
+        >
+          <boxGeometry />
+          <meshStandardMaterial color="green" transparent opacity={0.5} />
+        </mesh>
+        <mesh
+          position={[0, hipPosition, 0]}
+          scale={[hipBoxWidth, boxHeight, 0.2]}
+        >
+          <boxGeometry />
+          <meshStandardMaterial color="blue" transparent opacity={0.5} />
         </mesh>
       </Canvas>
 
@@ -96,6 +141,30 @@ const Scene: React.FC = () => {
             type="number"
             value={chestWidth}
             onChange={handleChestWidthChange}
+            min="70"
+            max="120"
+            style={{ marginLeft: "10px" }}
+          />
+        </label>
+        <br />
+        <label>
+          Waist Width (cm):
+          <input
+            type="number"
+            value={waistWidth}
+            onChange={handleWaistWidthChange}
+            min="60"
+            max="100"
+            style={{ marginLeft: "10px" }}
+          />
+        </label>
+        <br />
+        <label>
+          Hip Width (cm):
+          <input
+            type="number"
+            value={hipWidth}
+            onChange={handleHipWidthChange}
             min="70"
             max="120"
             style={{ marginLeft: "10px" }}
