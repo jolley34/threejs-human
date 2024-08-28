@@ -81,7 +81,7 @@ const Scene: React.FC = () => {
           enableZoom={true}
           enablePan={true}
           enableRotate={true}
-          target={[0, 1, 0]}
+          target={[0, 0.8, 0]}
           minDistance={1.6}
           maxDistance={3}
           minPolarAngle={0.5}
