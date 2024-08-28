@@ -6,7 +6,8 @@ const Model: React.FC<{
   chestWidth: number;
   waistWidth: number;
   hipWidth: number;
-}> = ({ scale, chestWidth, waistWidth, hipWidth }) => {
+  heightScaleFactor: number;
+}> = ({ scale, chestWidth, waistWidth, hipWidth, heightScaleFactor }) => {
   const { scene } = useGLTF("./lowpoly-human-reff.glb");
 
   useEffect(() => {
@@ -15,20 +16,21 @@ const Model: React.FC<{
     const waist = scene.getObjectByName("Waist");
     const hips = scene.getObjectByName("Hips");
 
-    // Adjust the scale of each part
+    // Adjust the width of each part
+    const widthScale = 1; // No change in width
     if (chest) {
-      chest.scale.set(chestWidth / 96.52, 1, 1); // Adjust chest width
+      chest.scale.set(chestWidth / 96.52, widthScale, widthScale); // Adjust chest width
     }
     if (waist) {
-      waist.scale.set(waistWidth / 80, 1, 1); // Adjust waist width
+      waist.scale.set(waistWidth / 80, widthScale, widthScale); // Adjust waist width
     }
     if (hips) {
-      hips.scale.set(hipWidth / 96.52, 1, 1); // Adjust hip width
+      hips.scale.set(hipWidth / 96.52, widthScale, widthScale); // Adjust hip width
     }
 
-    // Apply overall scale
-    scene.scale.set(scale, scale, scale);
-  }, [scale, chestWidth, waistWidth, hipWidth, scene]);
+    // Apply overall height scaling
+    scene.scale.set(scale, scale * heightScaleFactor, scale);
+  }, [scale, chestWidth, waistWidth, hipWidth, heightScaleFactor, scene]);
 
   return <primitive object={scene} />;
 };

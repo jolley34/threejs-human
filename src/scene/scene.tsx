@@ -9,7 +9,7 @@ const Scene: React.FC = () => {
   const [waistWidth, setWaistWidth] = useState<number>(80); // Default waist width in cm
   const [hipWidth, setHipWidth] = useState<number>(96.52); // Default hip width in cm
 
-  const modelOriginalHeight = 220; // The height of the model when the positions are defined
+  const modelOriginalHeight = 220; // The height of the model when the proportions are defined
 
   // Convert height in cm to scale factor
   const heightScaleFactor = height / modelOriginalHeight;
@@ -19,17 +19,18 @@ const Scene: React.FC = () => {
   const waistHeightPercentage = 0.45; // Percentage of height where waist is located
   const hipHeightPercentage = 0.37; // Percentage of height where hips are located
 
-  // Calculate positions and sizes of the boxes based on the current height
+  // Calculate positions of the boxes based on the current height
   const chestPosition = (height * chestHeightPercentage) / 100;
   const waistPosition = (height * waistHeightPercentage) / 100;
   const hipPosition = (height * hipHeightPercentage) / 100;
 
-  const boxHeight = 0.2 * heightScaleFactor; // Adjust box height proportionally
+  // Box height is proportional to height scaling
+  const boxHeight = 0.2 * heightScaleFactor;
 
-  // Adjust the box width to match the proportion of the model's height
-  const chestBoxWidth = (chestWidth / 300) * heightScaleFactor;
-  const waistBoxWidth = (waistWidth / 340) * heightScaleFactor;
-  const hipBoxWidth = (hipWidth / 340) * heightScaleFactor;
+  // Box widths should remain constant, scaled appropriately for the model
+  const chestBoxWidth = chestWidth / 96.52; // Original width scaling
+  const waistBoxWidth = waistWidth / 80; // Original width scaling
+  const hipBoxWidth = hipWidth / 96.52; // Original width scaling
 
   const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHeight = Number(e.target.value);
@@ -69,10 +70,11 @@ const Scene: React.FC = () => {
         <directionalLight position={[5, 5, 5]} intensity={1} />
         <Suspense fallback={<span>Loading...</span>}>
           <Model
-            scale={heightScaleFactor}
+            scale={1} // Scale for height will be adjusted in the Model component
             chestWidth={chestWidth}
             waistWidth={waistWidth}
             hipWidth={hipWidth}
+            heightScaleFactor={heightScaleFactor}
           />
         </Suspense>
         <OrbitControls
