@@ -14,24 +14,6 @@ const Scene: React.FC = () => {
   // Convert height in cm to scale factor
   const heightScaleFactor = height / modelOriginalHeight;
 
-  // Proportions for chest, waist, and hip positions based on 220 cm model height
-  const chestHeightPercentage = 0.55; // Percentage of height where chest is located
-  const waistHeightPercentage = 0.45; // Percentage of height where waist is located
-  const hipHeightPercentage = 0.37; // Percentage of height where hips are located
-
-  // Calculate positions of the boxes based on the current height
-  const chestPosition = (height * chestHeightPercentage) / 100;
-  const waistPosition = (height * waistHeightPercentage) / 100;
-  const hipPosition = (height * hipHeightPercentage) / 100;
-
-  // Box height is proportional to height scaling
-  const boxHeight = 0.2 * heightScaleFactor;
-
-  // Box widths should remain constant, scaled appropriately for the model
-  const chestBoxWidth = chestWidth / 96.52; // Original width scaling
-  const waistBoxWidth = waistWidth / 80; // Original width scaling
-  const hipBoxWidth = hipWidth / 96.52; // Original width scaling
-
   const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHeight = Number(e.target.value);
     if (newHeight >= 150 && newHeight <= 220) {
@@ -90,29 +72,6 @@ const Scene: React.FC = () => {
         <mesh rotation-x={-Math.PI / 2}>
           <circleGeometry args={[5, 32]} />
           <meshStandardMaterial color="#343434" />
-        </mesh>
-
-        {/* Debug boxes */}
-        <mesh
-          position={[0, chestPosition, 0]}
-          scale={[chestBoxWidth, boxHeight, 0.2]}
-        >
-          <boxGeometry />
-          <meshStandardMaterial color="red" transparent opacity={0.5} />
-        </mesh>
-        <mesh
-          position={[0, waistPosition, 0]}
-          scale={[waistBoxWidth, boxHeight, 0.2]}
-        >
-          <boxGeometry />
-          <meshStandardMaterial color="green" transparent opacity={0.5} />
-        </mesh>
-        <mesh
-          position={[0, hipPosition, 0]}
-          scale={[hipBoxWidth, boxHeight, 0.2]}
-        >
-          <boxGeometry />
-          <meshStandardMaterial color="blue" transparent opacity={0.5} />
         </mesh>
       </Canvas>
 
