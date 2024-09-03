@@ -1,83 +1,85 @@
-import { useGLTF } from "@react-three/drei";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import React, { useEffect } from "react";
 
-const Model: React.FC<{
-  scale: number;
+interface ModelProps {
+  height: number;
   chestWidth: number;
   waistWidth: number;
   hipWidth: number;
-  heightScaleFactor: number;
-}> = ({ scale, chestWidth, waistWidth, hipWidth, heightScaleFactor }) => {
-  const { scene } = useGLTF("./lowpoly-human-reff.glb");
+}
 
-  // Original model height used for scaling and positioning
-  const modelOriginalHeight = 220;
+const Model: React.FC<ModelProps> = ({
+  height,
+  chestWidth,
+  waistWidth,
+  hipWidth,
+}) => {
+  const { scene } = useGLTF("/base_mesh_low_poly_character.glb");
 
-  // Percentages of the height where chest, waist, and hips are located
-  const chestHeightPercentage = 0.55;
-  const waistHeightPercentage = 0.45;
-  const hipHeightPercentage = 0.36;
+  // Default dimensions in cm
+  const defaultHeight = 180;
+  const defaultWaistWidth = 80;
+  const defaultChestWidth = 96.52;
+  const defaultHipWidth = 90;
 
-  // Function to calculate the position based on height and percentage
-  const calculatePosition = (height: number, percentage: number) => {
-    return (height * percentage) / 100;
-  };
-
-  // Calculate the average width scale factor
-  const averageWidthScale =
-    (chestWidth / 96.52 + waistWidth / 80 + hipWidth / 96.52) / 3;
-
-  // Calculate the scaled height of the model
-  const scaledHeight = modelOriginalHeight * heightScaleFactor;
-
-  // Calculate dynamic positions based on the scaled height
-  const chestPosition = calculatePosition(scaledHeight, chestHeightPercentage);
-  const waistPosition = calculatePosition(scaledHeight, waistHeightPercentage);
-  const hipPosition = calculatePosition(scaledHeight, hipHeightPercentage);
-
-  const boxHeight = 0.2 * heightScaleFactor;
-
-  const chestBoxWidth = chestWidth / 96.52;
-  const waistBoxWidth = waistWidth / 80;
-  const hipBoxWidth = hipWidth / 96.52;
+  // Calculate scale factors
+  const heightScaleFactor = height / defaultHeight;
+  const chestScaleFactor = chestWidth / defaultChestWidth;
+  const waistScaleFactor = waistWidth / defaultWaistWidth;
+  const hipScaleFactor = hipWidth / defaultHipWidth;
 
   useEffect(() => {
-    // Apply scaling to the entire model
-    scene.scale.set(
-      scale * averageWidthScale,
-      scale * heightScaleFactor,
-      scale * averageWidthScale
-    );
-  }, [scale, chestWidth, waistWidth, hipWidth, heightScaleFactor, scene]);
+    const adjustBodyPartWidth = (partName: string, scaleX: number) => {
+      const part = scene.getObjectByName(partName);
+      if (part) {
+        // Apply scaling only on the x-axis for width adjustment
+        part.scale.set(scaleX, part.scale.y, scaleX);
+      }
+    };
 
-  return (
-    <>
-      <primitive object={scene} />
+    // Adjust waist and hip width
+    const waistPartName = "DEF-spine_56"; // Make sure this is the correct name
+    const hipPartName = "spine_fk_138"; // Make sure this is the correct name
+    const chestPartName = "MCH-spine002_328"; // Make sure this is the correct name
+    const headPartName = "DEF-head_50"; // Make sure this is the correct name
 
-      {/* Debug boxes */}
-      <mesh
-        position={[0, chestPosition, 0]}
-        scale={[chestBoxWidth, boxHeight, 0.2]}
-      >
-        <boxGeometry />
-        <meshStandardMaterial color="red" transparent opacity={0.5} />
-      </mesh>
-      <mesh
-        position={[0, waistPosition, 0]}
-        scale={[waistBoxWidth, boxHeight, 0.2]}
-      >
-        <boxGeometry />
-        <meshStandardMaterial color="green" transparent opacity={0.5} />
-      </mesh>
-      <mesh
-        position={[0, hipPosition, 0]}
-        scale={[hipBoxWidth, boxHeight, 0.2]}
-      >
-        <boxGeometry />
-        <meshStandardMaterial color="blue" transparent opacity={0.5} />
-      </mesh>
-    </>
-  );
+    // Apply scale factors
+    adjustBodyPartWidth(waistPartName, waistScaleFactor);
+    adjustBodyPartWidth(hipPartName, hipScaleFactor);
+    adjustBodyPartWidth(chestPartName, chestScaleFactor);
+
+    // Calculate and apply the opposite scaling for head
+    const oppositeScaleFactor = 1 / waistScaleFactor;
+    adjustBodyPartWidth(headPartName, oppositeScaleFactor);
+
+    // Optionally adjust height if required
+    // scene.traverse((object) => {
+    //   if (object.type === 'Mesh') {
+    //     object.scale.y = heightScaleFactor;
+    //   }
+    // });
+  }, [
+    waistWidth,
+    hipWidth,
+    chestWidth,
+    height,
+    scene,
+    waistScaleFactor,
+    hipScaleFactor,
+    chestScaleFactor,
+  ]);
+
+  // Extract and apply animations
+  const { animations } = useGLTF("/base_mesh_low_poly_character.glb");
+  const { ref, actions } = useAnimations(animations, scene);
+
+  useEffect(() => {
+    if (actions && actions.idle) {
+      actions.idle.play();
+    }
+  }, [actions]);
+
+  return <primitive ref={ref} object={scene} />;
 };
 
 export default Model;

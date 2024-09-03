@@ -4,15 +4,10 @@ import React, { Suspense, useState } from "react";
 import Model from "./model"; // Ensure this path is correct
 
 const Scene: React.FC = () => {
-  const [height, setHeight] = useState<number>(180); // Default height in cm
+  const [height, setHeight] = useState<number>(180);
   const [chestWidth, setChestWidth] = useState<number>(96.52); // Default chest width in cm
   const [waistWidth, setWaistWidth] = useState<number>(80); // Default waist width in cm
-  const [hipWidth, setHipWidth] = useState<number>(96.52); // Default hip width in cm
-
-  const modelOriginalHeight = 220; // The height of the model when the proportions are defined
-
-  // Convert height in cm to scale factor
-  const heightScaleFactor = height / modelOriginalHeight;
+  const [hipWidth, setHipWidth] = useState<number>(91); // Default hip width in cm
 
   const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHeight = Number(e.target.value);
@@ -28,35 +23,34 @@ const Scene: React.FC = () => {
     }
   };
 
-  const handleWaistWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newWaistWidth = Number(e.target.value);
-    if (newWaistWidth >= 60 && newWaistWidth <= 100) {
-      setWaistWidth(newWaistWidth);
+  const handleHipWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newHipWidth = Number(e.target.value);
+    if (newHipWidth >= 90 && newHipWidth <= 120) {
+      setHipWidth(newHipWidth);
     }
   };
 
-  const handleHipWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newHipWidth = Number(e.target.value);
-    if (newHipWidth >= 70 && newHipWidth <= 120) {
-      setHipWidth(newHipWidth);
+  const handleWaistWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newWaistWidth = Number(e.target.value);
+    if (newWaistWidth >= 60 && newWaistWidth <= 200) {
+      setWaistWidth(newWaistWidth);
     }
   };
 
   return (
     <>
       <Canvas
-        style={{ height: "100dvh", width: "100dvw", background: "#000000" }} // Set background color to black
+        style={{ height: "100dvh", width: "100dvw", background: "#e8f4f8" }} // Set background color to black
         camera={{ position: [0, 1, 5], fov: 75 }}
       >
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
         <Suspense fallback={<span>Loading...</span>}>
           <Model
-            scale={1} // Scale for height will be adjusted in the Model component
+            height={height}
             chestWidth={chestWidth}
             waistWidth={waistWidth}
             hipWidth={hipWidth}
-            heightScaleFactor={heightScaleFactor}
           />
         </Suspense>
         <OrbitControls
@@ -75,7 +69,6 @@ const Scene: React.FC = () => {
         </mesh>
       </Canvas>
 
-      {/* Input for height */}
       <div
         style={{
           position: "absolute",
@@ -84,7 +77,7 @@ const Scene: React.FC = () => {
           color: "#fff",
         }}
       >
-        <label>
+        <label style={{ color: "black" }}>
           Height (cm):
           <input
             type="number"
@@ -96,7 +89,7 @@ const Scene: React.FC = () => {
           />
         </label>
         <br />
-        <label>
+        <label style={{ color: "black" }}>
           Chest Width (cm):
           <input
             type="number"
@@ -108,25 +101,25 @@ const Scene: React.FC = () => {
           />
         </label>
         <br />
-        <label>
+        <label style={{ color: "black" }}>
           Waist Width (cm):
           <input
             type="number"
             value={waistWidth}
             onChange={handleWaistWidthChange}
             min="60"
-            max="100"
+            max="200"
             style={{ marginLeft: "10px" }}
           />
         </label>
         <br />
-        <label>
+        <label style={{ color: "black" }}>
           Hip Width (cm):
           <input
             type="number"
-            value={hipWidth}
-            onChange={handleHipWidthChange}
-            min="70"
+            value={hipWidth} // Fixed here
+            onChange={handleHipWidthChange} // Fixed here
+            min="90" // Adjusted minimum value to match the allowed range
             max="120"
             style={{ marginLeft: "10px" }}
           />
