@@ -117,9 +117,9 @@ const Scene: React.FC = () => {
           Hip Width (cm):
           <input
             type="number"
-            value={hipWidth} // Fixed here
-            onChange={handleHipWidthChange} // Fixed here
-            min="90" // Adjusted minimum value to match the allowed range
+            value={hipWidth}
+            onChange={handleHipWidthChange}
+            min="90"
             max="120"
             style={{ marginLeft: "10px" }}
           />

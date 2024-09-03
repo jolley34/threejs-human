@@ -47,6 +47,7 @@ const Model: React.FC<ModelProps> = ({
     adjustBodyPartWidth(waistPartName, waistScaleFactor);
     adjustBodyPartWidth(hipPartName, hipScaleFactor);
     adjustBodyPartWidth(chestPartName, chestScaleFactor);
+    scene.scale.set(1, heightScaleFactor, 1);
 
     // Calculate and apply the opposite scaling for head
     const oppositeScaleFactor = 1 / waistScaleFactor;
