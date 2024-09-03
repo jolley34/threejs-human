@@ -39,7 +39,7 @@ const Model: React.FC<ModelProps> = ({
     const waistPartName = "DEF-spine_56";
     const hipPartName = "spine_fk_138";
     const chestPartName = "MCH-spine002_328";
-    const headPartName = "DEF-head_50";
+    const headPartName = "DEF-spine002_54";
 
     adjustBodyPartWidth(waistPartName, waistScaleFactor);
     adjustBodyPartWidth(hipPartName, hipScaleFactor);
@@ -47,6 +47,7 @@ const Model: React.FC<ModelProps> = ({
     scene.scale.set(1, heightScaleFactor, 1);
 
     const oppositeScaleFactor = 1 / waistScaleFactor;
+
     adjustBodyPartWidth(headPartName, oppositeScaleFactor);
   }, [
     waistWidth,

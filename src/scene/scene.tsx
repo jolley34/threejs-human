@@ -1,13 +1,13 @@
-import { OrbitControls } from "@react-three/drei";
+import { Environment, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React, { Suspense, useState } from "react";
 import Model from "./model"; // Ensure this path is correct
 
 const Scene: React.FC = () => {
   const [height, setHeight] = useState<number>(180);
-  const [chestWidth, setChestWidth] = useState<number>(96.52); // Default chest width in cm
-  const [waistWidth, setWaistWidth] = useState<number>(80); // Default waist width in cm
-  const [hipWidth, setHipWidth] = useState<number>(91); // Default hip width in cm
+  const [chestWidth, setChestWidth] = useState<number>(96.52);
+  const [waistWidth, setWaistWidth] = useState<number>(80);
+  const [hipWidth, setHipWidth] = useState<number>(91);
 
   const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHeight = Number(e.target.value);
@@ -40,10 +40,10 @@ const Scene: React.FC = () => {
   return (
     <>
       <Canvas
-        style={{ height: "100dvh", width: "100dvw", background: "#e8f4f8" }} // Set background color to black
+        style={{ height: "100dvh", width: "100dvw" }}
         camera={{ position: [0, 1, 5], fov: 75 }}
       >
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={0.1} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
         <Suspense fallback={<span>Loading...</span>}>
           <Model
@@ -52,6 +52,7 @@ const Scene: React.FC = () => {
             waistWidth={waistWidth}
             hipWidth={hipWidth}
           />
+          <Environment files="/kloppenheim_06_puresky_4k.hdr" background />
         </Suspense>
         <OrbitControls
           enableZoom={true}
@@ -72,56 +73,76 @@ const Scene: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: "10px",
-          left: "10px",
+          top: "4rem",
+          left: "4rem",
           color: "#fff",
         }}
       >
         <label style={{ color: "black" }}>
           Height (cm):
+          <br />
           <input
             type="number"
             value={height}
             onChange={handleHeightChange}
             min="150"
             max="220"
-            style={{ marginLeft: "10px" }}
+            style={{
+              padding: "0.5rem 2rem",
+              borderRadius: "5px",
+              border: "none",
+            }}
           />
         </label>
         <br />
         <label style={{ color: "black" }}>
           Chest Width (cm):
+          <br />
           <input
             type="number"
             value={chestWidth}
             onChange={handleChestWidthChange}
             min="70"
             max="120"
-            style={{ marginLeft: "10px" }}
+            style={{
+              padding: "0.5rem 2rem",
+              borderRadius: "5px",
+              border: "none",
+            }}
           />
         </label>
         <br />
         <label style={{ color: "black" }}>
           Waist Width (cm):
+          <br />
           <input
             type="number"
             value={waistWidth}
             onChange={handleWaistWidthChange}
             min="60"
             max="200"
-            style={{ marginLeft: "10px" }}
+            style={{
+              padding: "0.5rem 2rem",
+              borderRadius: "5px",
+              border: "none",
+            }}
           />
         </label>
         <br />
         <label style={{ color: "black" }}>
           Hip Width (cm):
+          <br />
           <input
             type="number"
             value={hipWidth}
             onChange={handleHipWidthChange}
             min="90"
             max="120"
-            style={{ marginLeft: "10px" }}
+            style={{
+              padding: "0.5rem 2rem",
+              borderRadius: "5px",
+              border: "none",
+            }}
           />
         </label>
       </div>
