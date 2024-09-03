@@ -32,33 +32,22 @@ const Model: React.FC<ModelProps> = ({
     const adjustBodyPartWidth = (partName: string, scaleX: number) => {
       const part = scene.getObjectByName(partName);
       if (part) {
-        // Apply scaling only on the x-axis for width adjustment
         part.scale.set(scaleX, part.scale.y, scaleX);
       }
     };
 
-    // Adjust waist and hip width
-    const waistPartName = "DEF-spine_56"; // Make sure this is the correct name
-    const hipPartName = "spine_fk_138"; // Make sure this is the correct name
-    const chestPartName = "MCH-spine002_328"; // Make sure this is the correct name
-    const headPartName = "DEF-head_50"; // Make sure this is the correct name
+    const waistPartName = "DEF-spine_56";
+    const hipPartName = "spine_fk_138";
+    const chestPartName = "MCH-spine002_328";
+    const headPartName = "DEF-head_50";
 
-    // Apply scale factors
     adjustBodyPartWidth(waistPartName, waistScaleFactor);
     adjustBodyPartWidth(hipPartName, hipScaleFactor);
     adjustBodyPartWidth(chestPartName, chestScaleFactor);
     scene.scale.set(1, heightScaleFactor, 1);
 
-    // Calculate and apply the opposite scaling for head
     const oppositeScaleFactor = 1 / waistScaleFactor;
     adjustBodyPartWidth(headPartName, oppositeScaleFactor);
-
-    // Optionally adjust height if required
-    // scene.traverse((object) => {
-    //   if (object.type === 'Mesh') {
-    //     object.scale.y = heightScaleFactor;
-    //   }
-    // });
   }, [
     waistWidth,
     hipWidth,
@@ -70,7 +59,6 @@ const Model: React.FC<ModelProps> = ({
     chestScaleFactor,
   ]);
 
-  // Extract and apply animations
   const { animations } = useGLTF("/base_mesh_low_poly_character.glb");
   const { ref, actions } = useAnimations(animations, scene);
 
